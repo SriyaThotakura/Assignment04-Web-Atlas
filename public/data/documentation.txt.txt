@@ -1,0 +1,6 @@
+Started with the astro-maplibre-template/scrollytelling.
+"Started with the astro-maplibre-template."
+
+"Used code from the _scrollytelling_steps.yaml example to build my own 4-step story."
+
+"Data-driven color ramp for HDS adapted from Maplibre documentation.

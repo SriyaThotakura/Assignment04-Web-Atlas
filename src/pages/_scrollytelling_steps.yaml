@@ -1,59 +1,87 @@
-- title: Introduction
-  center: [-74.0060, 40.7128]
-  zoom: 10
+- title: 'Step 1: The Regulatory Problem'
+  center: [-73.8648, 40.8448]
+  zoom: 12
   pitch: 0
   bearing: 0
-  description: Welcome to the map scrollytelling app. You can set position, zoom, pitch, and bearing via the top-level props.
-
-- title: Section Title - Squirrels in Central Park
-  center: [-73.96778, 40.78376]
-  zoom: 14
-  pitch: 0
-  bearing: 20
-  description: Now we zoom in. A layer is added from a geojson  Layer paint properties are passed, and layers are set to turn off when you continue scrolling via the `persist:false` attribute.
-  
+  description: 'This map shows the regulatory "spillover" effect. Yellow lines are informal truck idling zones, often right next to schools, shown as red dots.'
   layers:
-  # id of layer
-  - id: 'squirrel-census'
-  # path to dataset 
-  # note anything uploaded in the public/data folder will be uploaded to your site at url/data/file.png
-    url: './data/squirrel20241021.geojson'
-  # type of symbol
-    type: 'circle'
-  # type of symbol
-    data-type: 'geojson'
-    layer-type: 'circle'
-    persist: true
-    paint:
-      circle-radius: 5
-      circle-color: '#826260'
-      circle-opacity: 0.8
+    - id: 'idling-zones'
+      url: './data/Informal_Idling_Zones.geojson'
+      type: 'line'
+      data-type: 'geojson'
+      layer-type: 'line'
+      persist: true
+      paint:
+        line-color: '#f0a500'
+        line-width: 2.5
+        line-opacity: 0.8
+    
+    - id: 'school-points'
+      url: './data/SchoolPoints APS 2024.geojson'
+      type: 'circle'
+      data-type: 'geojson'
+      layer-type: 'circle'
+      persist: false
+      paint:
+        circle-color: '#d90429' # Bright red
+        circle-radius: 4
+        circle-stroke-color: '#ffffff'
+        circle-stroke-width: 1
 
-- title: Polygon Layer
-  # center: [-73.96778, 40.78376]
-  center: [-74.00739, 40.67930]
-  zoom: 14
+- title: 'Step 2: The Analysis'
+  center: [-73.8648, 40.8448]
+  zoom: 12
   pitch: 0
-  bearing: 20
-  description: Now we zoom to a new location. And add a polygon layer of the innundation zone from Hurricane Sandy via GeoJSON endpoint. Layer paint properties are passed (notice they are different from the syntax for the point layer). 
+  bearing: 0
+  description: 'To quantify the risk, we created a Health Disparity Score (HDS) for every census block, using the same breaks from our analysis (0-8.1, 8.1-12.6, etc.). Areas in dark red have the highest health burdens.'
   layers:
-  - id: 'sandy'
-    url: 'https://data.cityofnewyork.us/resource/5xsi-dfpx.geojson'
-    type: 'fill'
-    data-type: 'geojson'
-    layer-type: 'fill'
-    persist: false
-    paint:
-      fill-color: '#c1e2e6'
-      fill-opacity: 0.8
+    - id: 'census-base'
+      url: './data/census_final.geojson'
+      type: 'fill'
+      data-type: 'geojson'
+      layer-type: 'fill'
+      persist: true
+      paint:
+        # This is the data-driven color ramp based on your HDS field
+        # It uses the exact breaks from your PDF
+        fill-color:
+          - interpolate
+          - ['linear']
+          - ['get', 'HDS']
+          - 0
+          - '#ffffcc'  # 0 - 8.1
+          - 8.1
+          - '#fed976'  # 8.1 - 12.6
+          - 12.6
+          - '#feb24c'  # 12.6 - 17.6
+          - 17.6
+          - '#fd8d3c'  # 17.6 - 20
+          - 20
+          - '#e31a1c'
+        fill-opacity: 0.7
 
+- title: 'Step 3: The Solution'
+  center: [-73.8648, 40.8448]
+  zoom: 12
+  pitch: 0
+  bearing: 0
+  description: "Finally, we identified the 'Priority Intervention Zones' - the areas with *both* high HDS scores and low tree canopy. These are the most critical areas for intervention, shown in dark brown."
+  layers:
+    - id: 'priority-zones'
+      url: './data/Priority_Intervention_Zones.geojson'
+      type: 'fill'
+      data-type: 'geojson'
+      layer-type: 'fill'
+      persist: true
+      paint:
+        fill-color: '#6e4720'
+        fill-outline-color: '#000000'
+        fill-opacity: 0.9
 
-
-- title: London
-  center: [-0.1278, 51.5074]
-  zoom: 8
-  pitch: 30
-  bearing: -10
-  description: You can change the position of the overlay div using the position attribute, and can add images using the media attribute.
-  media: https://img.atlasobscura.com/OGZXBPY6hP2AXBi-M97MjAYHr46wOlG4iPA1pz2owEI/rt:fit/h:390/q:81/sm:1/scp:1/ar:1/aHR0cHM6Ly9hdGxh/cy1kZXYuczMuYW1h/em9uYXdzLmNvbS91/cGxvYWRzL3BsYWNl/X2ltYWdlcy85NTI3/NzEyMWY1NWM5ZWIx/ZDRfMTM3ODE0MjA1/OTNfMjQ0ZmUxZDJj/OV9rLmpwZw.jpg
-  position: right
+- title: 'Synthesis: Problem & Solution'
+  center: [-73.8648, 40.8448]
+  zoom: 12.5
+  pitch: 0
+  bearing: 0
+  description: "Here we see the full story. The yellow idling zones (the problem) are located directly within or next to the dark brown priority zones (the solution), proving the link between regulatory failure and community health."
+  layers: []
